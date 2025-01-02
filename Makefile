@@ -22,7 +22,7 @@ image:
 
 service:
 	docker run \
-	-d \
+	-it \
 	--restart unless-stopped \
 	--name backup-report \
 	--publish 5000:5000 \
