@@ -3,6 +3,7 @@
 logdir
 test1.json
 testinput.txt
+config.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
