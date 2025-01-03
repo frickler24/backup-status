@@ -7,7 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN mkdir -git ap /app/logdir
+RUN mkdir -p /app/logdir
 USER nobody
 
 CMD ["python3", "backup-report.py"]
