@@ -28,3 +28,4 @@ service:
 	--publish 5000:5000 \
 	-v ./logdir:/app/logdir \
 	backup-report:latest
+

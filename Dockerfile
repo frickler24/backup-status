@@ -7,8 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN mkdir -p /app/logdir && chmod 777 /app/logdir
+RUN mkdir -p /app/logdir
 USER nobody
-RUN ls -lsa /app/logdir
 
 CMD ["python3", "backup-report.py"]
