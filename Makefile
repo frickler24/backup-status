@@ -1,4 +1,4 @@
-VERSION=0.1.3
+VERSION=0.1.4
 
 # enable or call 	NOCACHE=--no-cache make image
 # NOCACHE=--no-cache
