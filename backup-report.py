@@ -1,7 +1,7 @@
 from flask import Flask, request
 import json
 import signal
-import os
+import sys
 import time
 import paho.mqtt.client as paho
 import re
@@ -36,7 +36,7 @@ def handler(signum, frame):
 
     if signum == signal.SIGTERM or signum == signal.SIGINT:
         print(f'Got Signal {signame}, terminating normally.')
-        os._exit(0)
+        sys.exit(0)
  
 
 def set_standard_signal_handler():
@@ -79,11 +79,17 @@ else:
 if __name__ == '__main__':
 
     set_standard_signal_handler()
-    print(f'{hostname=}, {dir(config)=}')
 
-    # for key in dir(config):
-    #     print(f'Gefunden: {key}, Wert = {getattr(config, key)}')
-    
-    print(f'{hostname=}')
-    
+    client = paho.Client()
+    client.username_pw_set(config.mqtt_user, config.mqtt_password)
+    # client.on_message = on_message
+    # set will_set to send a message when the client disconnects
+    client.will_set(config.mqtt_topic_prefix + "/" + hostname + "/status", "0", qos=config.qos, retain=config.retain)
+    try:
+        client.connect(config.mqtt_host, int(config.mqtt_port))
+        print(f'Got a client Connection.', flush=True)
+    except Exception as e:
+        print("Error connecting to MQTT broker:", e)
+        sys.exit(1)
+
     app.run(host='0.0.0.0', port=5000, debug=False)
