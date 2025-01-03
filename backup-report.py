@@ -1,6 +1,7 @@
 from flask import Flask, request
 import json
-import os
+import signal
+import time
 
 app = Flask(__name__)
 
@@ -22,5 +23,21 @@ def handle_backup_report():
 
     return 'Backup-Bericht erfolgreich gespeichert.', 200
 
+
+def handler(signum, frame):
+    signame = signal.Signals(signum).name
+    print(f'Signal handler called with signal {signame} ({signum})')
+    print(f'{frame:}', flush=True)
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    signal.signal(signal.SIGALRM, handler)
+
+    signal.signal(signal.SIGHUP, handler)
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
+    signal.signal(signal.SIGUSR1, handler)
+    signal.signal(signal.SIGUSR2, handler)
+    signal.signal(signal.SIGCONT, handler)
+
+    app.run(host='0.0.0.0', port=5000, debug=True)
