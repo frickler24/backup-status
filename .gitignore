@@ -1,7 +1,7 @@
 
 #script config and test file
 logdir
-test1.json
+test*.json
 testinput.txt
 config.py
 

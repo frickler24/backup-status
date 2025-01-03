@@ -9,6 +9,7 @@ import socket
 import config
 import subprocess
 import uuid
+import datetime
 
 from typing import Dict, Union, Optional, Literal
 # from homeassistant.components.mqtt.sensor import DEVICE_CLASSES, STATE_CLASSES
@@ -178,11 +179,13 @@ def config_json(what_config, device="0"):
     elif what_config == "directory":
         data["icon"] = "hass:thermometer"
         data["name"] = "Directory"
+
     elif what_config == "end_time":
         data["icon"] = "mdi:calendar"
         data["name"] = "Uptime"
         data["value_template"] = "{{ as_datetime(value) }}"
         data["device_class"] = "timestamp"
+
     elif what_config == "new_chunk_size":
         data["icon"] = "mdi:harddisk"
         data["name"] = "new chunk size"
@@ -215,162 +218,118 @@ def config_json(what_config, device="0"):
         data["name"] = "New Files"
         data["unit_of_measurement"] = ""
         data["state_class"] = "measurement"
+    elif what_config == "new_metadata_chunk_size":
+        data["icon"] = "mdi:harddisk"
+        data["name"] = "New Metadata Chunk Size"
+        data["unit_of_measurement"] = "B"
+        data["state_class"] = "measurement"
+    elif what_config == "new_metadata_chunks":
+        data["icon"] = "mdi:speedometer"
+        data["name"] = "New Metadata Chunks"
+        data["unit_of_measurement"] = ""
+        data["device_class"] = "number"
+        data["state_class"] = "measurement"
 
-    elif what_config == "uptime":
+    elif what_config == "result":
+        data["icon"] = "mdi:lan-connect"
+        data["name"] = "Result"
+ 
+    elif what_config == "start_time":
         data["icon"] = "mdi:calendar"
-        data["name"] = "Uptime"
+        data["name"] = "Start Time"
         data["value_template"] = "{{ as_datetime(value) }}"
         data["device_class"] = "timestamp"
-    elif what_config == "uptime_seconds":
-        data["icon"] = "mdi:timer-outline"
-        data["name"] = "Uptime"
-        data["unit_of_measurement"] = "s"
-        data["device_class"] = "duration"
-        data["state_class"] = "total_increasing"
-    elif what_config == "wifi_signal":
-        data["icon"] = "mdi:wifi"
-        data["name"] = "Wifi Signal"
-        data["unit_of_measurement"] = "%"
-        data["state_class"] = "measurement"
-        data["device_class"] = "signal_strength"
-    elif what_config == "wifi_signal_dbm":
-        data["icon"] = "mdi:wifi"
-        data["name"] = "Wifi Signal"
-        data["unit_of_measurement"] = "dBm"
-        data["device_class"] = "signal_strength"
-        data["state_class"] = "measurement"
-    elif what_config == "rpi5_fan_speed":
-        data["icon"] = "mdi:fan"
-        data["name"] = "Fan Speed"
-        data["unit_of_measurement"] = "RPM"
-        data["state_class"] = "measurement"
-    elif what_config == "status":
+ 
+    elif what_config == "storage":
         data["icon"] = "mdi:lan-connect"
-        data["name"] = "Status"
-        data["value_template"] = "{{ 'online' if value == '1' else 'offline' }}"
-    elif what_config == "git_update":
-        data["icon"] = "mdi:git"
-        data["name"] = "RPi MQTT Monitor"
-        data["title"] = "Device Update"
-        data["device_class"] = "update"
+        data["name"] = "Storage"
+ 
+    elif what_config == "storage_url":
+        data["icon"] = "mdi:lan-connect"
+        data["name"] = "Storage URL"
+ 
+    elif what_config == "total_chunk_size":
+        data["icon"] = "mdi:harddisk"
+        data["name"] = "Total Chunk Size"
+        data["unit_of_measurement"] = "B"
         data["state_class"] = "measurement"
-        data["value_template"] = "{{ 'ON' if value_json.installed_ver != value_json.new_ver else 'OFF' }}"
-    elif what_config == "update":
-        version = update.check_git_version_remote(script_dir)
-        data["icon"] = "mdi:update"
-        data["name"] = "RPi MQTT Monitor"
-        data["title"] = "New Version"
-        data["state_topic"] = config.mqtt_topic_prefix + "/" + hostname + "/" + "git_update"
-        data["value_template"] = "{{ {'installed_version': value_json.installed_ver, 'latest_version': value_json.new_ver } | to_json }}"
-        data["device_class"] = "firmware"
-        data["command_topic"] = config.mqtt_discovery_prefix + "/update/" + hostname + "/command"
-        data["payload_install"] = "install"
-        data['release_url'] = "https://github.com/hjelev/rpi-mqtt-monitor/releases/tag/" + version
-        data['entity_picture'] = "https://raw.githubusercontent.com/hjelev/rpi-mqtt-monitor/refs/heads/master/images/update_icon.png"
-        data['release_summary'] = get_release_notes(version)
-    elif what_config == "restart_button":
-        data["icon"] = "mdi:restart"
-        data["name"] = "System Restart"
-        data["command_topic"] = config.mqtt_discovery_prefix + "/update/" + hostname + "/command"
-        data["payload_press"] = "restart"
-        data["device_class"] = "restart"
-    elif what_config == "shutdown_button":
-        data["icon"] = "mdi:power"
-        data["name"] = "System Shutdown"
-        data["command_topic"] = config.mqtt_discovery_prefix + "/update/" + hostname + "/command"
-        data["payload_press"] = "shutdown"
-        data["device_class"] = "restart"
-    elif what_config == "display_on":
-        data["icon"] = "mdi:monitor"
-        data["name"] = "Monitor ON"
-        data["command_topic"] = config.mqtt_discovery_prefix + "/update/" + hostname + "/command"
-        data["payload_press"] = "display_on"
-        data["device_class"] = "restart"
-    elif what_config == "display_off":
-        data["icon"] = "mdi:monitor"
-        data["name"] = "Monitor OFF"
-        data["command_topic"] = config.mqtt_discovery_prefix + "/update/" + hostname + "/command"
-        data["payload_press"] = "display_off"
-        data["device_class"] = "restart"
-    elif what_config == device + "_temp":
-        data["icon"] = "hass:thermometer"
-        data["name"] = device + " Temperature"
-        data["unit_of_measurement"] = "°C"
-        data["device_class"] = "temperature"
+    elif what_config == "total_chunks":
+        data["icon"] = "mdi:speedometer"
+        data["name"] = "Total Chunks"
+        data["unit_of_measurement"] = ""
+        data["device_class"] = "number"
         data["state_class"] = "measurement"
-    elif what_config == "rpi_power_status":
-        data["icon"] = "mdi:flash"
-        data["name"] = "RPi Power Status"  
-    elif what_config == "apt_updates":
-        data["icon"] = "mdi:update"
-        data["name"] = "APT Updates"
-    elif what_config == "ds18b20_status":
-        data["icon"] = "hass:thermometer"
-        data["name"] = device + " Temperature"
-        data["unit_of_measurement"] = "°C"
-        data["device_class"] = "temperature"
+ 
+    elif what_config == "total_file_chunk_size":
+        data["icon"] = "mdi:harddisk"
+        data["name"] = "Total File Chunk Size"
+        data["unit_of_measurement"] = "B"
         data["state_class"] = "measurement"
-        # we define again the state topic in order to get a unique state topic if we have two sensors of the same type
-        data["state_topic"] = config.mqtt_topic_prefix + "/" + hostname + "/" + what_config + "_" + device
-        data["unique_id"] = hostname + "_" + what_config + "_" + device
-    elif what_config == "sht21_temp_status":
-        data["icon"] = "hass:thermometer"
-        data["name"] = device + " Temperature"
-        data["unit_of_measurement"] = "°C"
-        data["device_class"] = "temperature"
+    elif what_config == "total_file_chunks":
+        data["icon"] = "mdi:speedometer"
+        data["name"] = "Total File Chunks"
+        data["unit_of_measurement"] = ""
+        data["device_class"] = "number"
         data["state_class"] = "measurement"
-        # we define again the state topic in order to get a unique state topic if we have two sensors of the same type
-        data["state_topic"] = config.mqtt_topic_prefix + "/" + hostname + "/" + what_config + "_" + device
-        data["unique_id"] = hostname + "_" + what_config + "_" + device
-    elif what_config == "sht21_hum_status":
-        data["icon"] = "mdi:water-percent"
-        data["name"] = device + " Humidity"
-        data["unit_of_measurement"] = "%"
-        data["device_class"] = "temperature"
+    elif what_config == "total_files":
+        data["icon"] = "mdi:speedometer"
+        data["name"] = "Total Files"
+        data["unit_of_measurement"] = ""
+        data["device_class"] = "number"
         data["state_class"] = "measurement"
-        # we define again the state topic in order to get a unique state topic if we have two sensors of the same type
-        data["state_topic"] = config.mqtt_topic_prefix + "/" + hostname + "/" + what_config + "_" + device
-        data["unique_id"] = hostname + "_" + what_config + "_" + device
-    
+ 
+    elif what_config == "total_metadata_chunk_size":
+        data["icon"] = "mdi:harddisk"
+        data["name"] = "Total Metadata Chunk Size"
+        data["unit_of_measurement"] = "B"
+        data["state_class"] = "measurement"
+    elif what_config == "total_metadata_chunks":
+        data["icon"] = "mdi:speedometer"
+        data["name"] = "Total Metadata Chunks"
+        data["unit_of_measurement"] = ""
+        data["device_class"] = "number"
+        data["state_class"] = "measurement"
+ 
+    elif what_config == "uploaded_chunk_size":
+        data["icon"] = "mdi:harddisk"
+        data["name"] = "Uploaded Chunk Size"
+        data["unit_of_measurement"] = "B"
+        data["state_class"] = "measurement"
+    elif what_config == "uploaded_file_chunk_size":
+        data["icon"] = "mdi:harddisk"
+        data["name"] = "Uploaded File Chunk Size"
+        data["unit_of_measurement"] = "B"
+        data["state_class"] = "measurement"
+    elif what_config == "uploaded_metadata_chunk_size":
+        data["icon"] = "mdi:harddisk"
+        data["name"] = "Uploaded Metadata Chunk Size"
+        data["unit_of_measurement"] = "B"
+        data["state_class"] = "measurement"    
     else:
         return ""
-    # Return our built discovery config
-
-    if hass_api:
-        result = {
-            "name": data["name"],
-            "icon": data["icon"],
-            "state_class": data["state_class"],
-        }
-        if "unit_of_measurement" in data:
-            result["unit_of_measurement"] = data["unit_of_measurement"]      
-        if "device_class" in data:
-            result["device_class"] = data["device_class"]
-        if "unique_id" in data:
-            result["unique_id"] = data["unique_id"] 
-        if "value_template" in data:
-            result["value_template"] = data["value_template"] 
-            
-        return result
 
     return json.dumps(data)
 
 
 # Code is copied and adopted from https://github.com/frickler24/rpi-mqtt-monitor
-def publish_to_mqtt(report):
+def publish_to_mqtt(report: Dict[str, Union[str, int, float]]):
     client = create_mqtt_client()
     if client is None:
         return
 
     client.loop_start()
 
-  # Publish values received in status report
+    backup = report.get("directory", "Error in report, no directory given").replace("/", "_", -1)
+    # Publish values received in status report
     for key, value in report.items():
+        if "_time" in key:
+            value = datetime.datetime.fromtimestamp(value).strftime("%d. %B %Y %H:%M:%S %z %Z")
+
         if config.discovery_messages:
-            client.publish(f"{config.mqtt_discovery_prefix}/sensor/{config.mqtt_topic_prefix}/{hostname}_{key}/config",
+            client.publish(f"{config.mqtt_discovery_prefix}/sensor/{config.mqtt_topic_prefix}/{hostname}/{backup}_{key}/config",
                 config_json(key), qos=config.qos)
-        client.publish(f"{config.mqtt_topic_prefix}/{hostname}/{key}", value, qos=config.qos, retain=config.retain)
-    
+        client.publish(f"{config.mqtt_topic_prefix}/{hostname}/{backup}/{key}", value, qos=config.qos, retain=config.retain)
+
     while len(client._out_messages) > 0:
         time.sleep(0.1)
         client.loop()
@@ -379,7 +338,7 @@ def publish_to_mqtt(report):
     client.disconnect()
 
 
-def put_data(report_data: Dict[str, Union[str, int, float, Literal["Success"]]]) -> None:
+def put_data(report_data: Dict[str, Union[str, int, float]]) -> None:
     """
     Print data from report
 
@@ -388,31 +347,20 @@ def put_data(report_data: Dict[str, Union[str, int, float, Literal["Success"]]])
     """
 
     def get_len_of_longest_item(report_data: Dict[str, Union[str, int, float, Literal["Success"]]]) -> None:
-        """
-        Find longest key for formatting the output
-
-        Args:
-            report_data (Dict[str, Union[str, int, float, Literal["Success"]]]): Ein Wörterbuch mit den Berichtsdaten.
-        
-        Returns:
-            length (int)
-        """
         maxlen: int = 0
         for key, _ in report_data.items():
             maxlen = max(maxlen, len(key))
-        return maxlen + 1
+        return maxlen
 
-    print('The report data:')
-    # print(f'{report_data}', flush=True)
-    
+    print('The report data:')    
     maxlen: int = get_len_of_longest_item(report_data)
     for key, val in report_data.items():
-        print(f'{key:{maxlen}}: {val}')
+        print(f'{key:{maxlen + 1}}: {val}')
 
 
 # This function is called for each POST Request
 @app.route('/backup_report', methods=['POST'])
-def handle_backup_report():
+def handle_backup_report() -> str:
     """
     Endpoint zum Empfangen von Backup-Berichten.
     Die Daten werden in einer Logdatei gespeichert.
@@ -424,12 +372,13 @@ def handle_backup_report():
         log.write(json.dumps(report_data))
         log.write('\n')
 
-    put_data(report_data)
+    # put_data(report_data)
+    publish_to_mqtt(report_data)
+
     return 'Backup-Bericht erfolgreich gespeichert.', 200
 
 
 if __name__ == '__main__':
 
     set_standard_signal_handler()
-
     app.run(host='0.0.0.0', port=5000, debug=False)
