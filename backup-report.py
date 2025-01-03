@@ -76,10 +76,13 @@ if "hostname" in dir(config):
 else:
     hostname = re.sub(r'[^a-zA-Z0-9_-]', '_', socket.gethostname())
 
-if __name__ == '__main__':
 
-    set_standard_signal_handler()
 
+
+
+
+
+def get_client() -> paho.Client:
     client = paho.Client()
     client.username_pw_set(config.mqtt_user, config.mqtt_password)
     # client.on_message = on_message
@@ -87,9 +90,18 @@ if __name__ == '__main__':
     client.will_set(config.mqtt_topic_prefix + "/" + hostname + "/status", "0", qos=config.qos, retain=config.retain)
     try:
         client.connect(config.mqtt_host, int(config.mqtt_port))
-        print(f'Got a client Connection.', flush=True)
+        print(f'Got a client Connection, {client=}.', flush=True)
     except Exception as e:
         print("Error connecting to MQTT broker:", e)
         sys.exit(1)
+    
+    return client
+
+if __name__ == '__main__':
+
+    set_standard_signal_handler()
+
+    # can we get an mqtt-client?
+    client = get_client()
 
     app.run(host='0.0.0.0', port=5000, debug=False)
